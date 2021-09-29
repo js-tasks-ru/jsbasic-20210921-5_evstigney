@@ -1,3 +1,10 @@
+'use strict';
+
+const ELLIPSIS = "…";
+
 function truncate(str, maxlength) {
-  // ваш код...
+
+    return (str.length <= maxlength) ? str
+        : str.slice(0, --maxlength) + ELLIPSIS;
+
 }
