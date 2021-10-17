@@ -16,6 +16,16 @@ export default class Carousel {
 		return this._carousel;
 	}
 
+	_createCarouselInnerElement () {
+		const carouselInnerTemplate = `<div class="carousel__inner"></div>`;
+		const carouselInnerElement = createElement(carouselInnerTemplate);
+		this._slides.forEach((slide) => {
+			let slideElement = this._createSlideElement(slide);
+			carouselInnerElement.append(slideElement);
+		});
+		return carouselInnerElement;
+	}
+
 	_createCarouselElement () {
 		const carouselTemplate = `
 			<div class="carousel">
@@ -29,26 +39,9 @@ export default class Carousel {
 		`.trim();
 		const carouselElement = createElement(carouselTemplate);
 		carouselElement.append(this._carouselInner);
+		carouselElement.querySelector('.carousel__arrow_left').style.display = 'none';
 		carouselElement.addEventListener('click', this._arrowClickHandler.bind(this));
-/*
-		function checkArrows () {
-			for (let key in arrows) { arrows[key].style.display = 'flex'; }
-
-			if (currentSlideIndex === 0) arrows.left.style.display = 'none';
-			if (currentSlideIndex === slidesLength - 1) arrows.right.style.display = 'none';
-		}
-		*/
 		return carouselElement;
-	}
-
-	_createCarouselInnerElement () {
-		const carouselInnerTemplate = `<div class="carousel__inner"></div>`;
-		const carouselInnerElement = createElement(carouselInnerTemplate);
-		this._slides.forEach((slide) => {
-			let slideElement = this._createSlideElement(slide);
-			carouselInnerElement.append(slideElement);
-		});
-		return carouselInnerElement;
 	}
 
 	_createSlideElement ({image = 'red_curry_vega.png', price = 0, name = 'Any food'}) {
@@ -74,10 +67,14 @@ export default class Carousel {
 			const width = this._carouselInner.getBoundingClientRect().width
 			const target = event.target.closest('.carousel__arrow');
 			
-			if (target === this._arrows.left) --this._currentSlideIndex;
-			if (target === this._arrows.right) ++this._currentSlideIndex;
+			for (let key in this._arrows) { this._arrows[key].style.display = 'flex'; }
+			
+			if (target === this._arrows.left) this._arrows.left.style.display	=
+				(--this._currentSlideIndex === 0) ? 'none' : 'flex';
+			
+			if (target === this._arrows.right) this._arrows.right.style.display =
+				(++this._currentSlideIndex === this._slides.length - 1) ? 'none' : 'flex';
 
-			//checkArrows();
 			this._carouselInner.style.transform = `translateX(${-this._currentSlideIndex * width}px)`;
 		}
 	}
