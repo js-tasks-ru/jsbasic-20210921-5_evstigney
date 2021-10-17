@@ -3,21 +3,36 @@ import createElement from '../../assets/lib/create-element.js';
 export default class Carousel {
   constructor(slides) {
     this._slides = slides;
-		this._carousel = this._createCarouselElement();
 		this._carouselInner = this._createCarouselInnerElement();
+		this._carousel = this._createCarouselElement();
 	}
 
 	get elem () {
-		this._carousel.append(this._carouselInner);
+		return this._carousel;
+	}
+
+	_createCarouselElement () {
+		const carouselTemplate = `
+			<div class="carousel">
+				<div class="carousel__arrow carousel__arrow_right">
+					<img src="/assets/images/icons/angle-icon.svg" alt="icon">
+				</div>
+				<div class="carousel__arrow carousel__arrow_left">
+					<img src="/assets/images/icons/angle-left-icon.svg" alt="icon">
+				</div>
+			</div>
+		`.trim();
+		const carouselElement = createElement(carouselTemplate);
+		carouselElement.append(this._carouselInner);
 		const slidesLength = this._slides.length;
 		const arrows = {
-			left: this._carousel.querySelector('.carousel__arrow_left'),
-			right: this._carousel.querySelector('.carousel__arrow_right'),
+			left: carouselElement.querySelector('.carousel__arrow_left'),
+			right: carouselElement.querySelector('.carousel__arrow_right'),
 		};
 		let currentSlideIndex = 0;
 		let width = null;
 		checkArrows();
-		this._carousel.addEventListener('click', arrowClickHandler.bind(this));
+		carouselElement.addEventListener('click', arrowClickHandler.bind(this));
 
 		function arrowClickHandler (event) {
 			if (event.target.closest('.carousel__arrow')) {
@@ -38,23 +53,7 @@ export default class Carousel {
 			if (currentSlideIndex === 0) arrows.left.style.display = 'none';
 			if (currentSlideIndex === slidesLength - 1) arrows.right.style.display = 'none';
 		}
-
-		return this._carousel;
-	}
-
-	_createCarouselElement () {
-		const carouselTemplate = `
-			<div class="carousel">
-				<div class="carousel__arrow carousel__arrow_right">
-					<img src="/assets/images/icons/angle-icon.svg" alt="icon">
-				</div>
-				<div class="carousel__arrow carousel__arrow_left">
-					<img src="/assets/images/icons/angle-left-icon.svg" alt="icon">
-				</div>
-			</div>
-		`.trim();
-		const carouselElement = createElement(carouselTemplate);
-		carouselElement.append(this._carouselInner);
+		
 		return carouselElement;
 	}
 
