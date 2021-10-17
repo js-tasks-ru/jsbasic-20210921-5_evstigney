@@ -5,17 +5,40 @@ export default class Carousel {
     this._slides = slides;
 		this._carousel = this._createCarouselElement();
 		this._carouselInner = this._createCarouselInnerElement();
-		this._currentSlideIndex = 0;
-		this._arrows = {
-			left: this._carousel.querySelector('.carousel__arrow_left'),
-			right: this._carousel.querySelector('.carousel__arrow_right'),
-		};
 	}
 
 	get elem () {
 		this._carousel.append(this._carouselInner);
-		this._checkArrows();
-		this._carousel.addEventListener('click', this._arrowClickHandler.bind(this));
+		const slidesLength = this._slides.length;
+		const arrows = {
+			left: this._carousel.querySelector('.carousel__arrow_left'),
+			right: this._carousel.querySelector('.carousel__arrow_right'),
+		};
+		let currentSlideIndex = 0;
+		let width = 0;
+		checkArrows();
+		this._carousel.addEventListener('click', (event) => {
+
+			if (event.target.closest('.carousel__arrow')) {
+				const target = event.target.closest('.carousel__arrow');
+				width = this._carouselInner.getBoundingClientRect().width;
+				
+				if (target === arrows.left) --currentSlideIndex;
+				if (target === arrows.right) ++currentSlideIndex;
+
+				checkArrows();
+				this._carouselInner.style.transform = `translateX(${-currentSlideIndex * width}px)`;
+			}
+
+		});
+
+		function checkArrows () {
+			for (let key in arrows) { arrows[key].style.display = 'flex'; }
+
+			if (currentSlideIndex === 0) arrows.left.style.display = 'none';
+			if (currentSlideIndex === slidesLength - 1) arrows.right.style.display = 'none';
+		}
+
 		return this._carousel;
 	}
 
@@ -62,47 +85,5 @@ export default class Carousel {
 		`.trim();
 		const slideElement = createElement(slideTemplate);
 		return slideElement;
-	}
-
-	_arrowClickHandler (event) {
-
-		if (!event.target.closest('.carousel__arrow')) return;
-
-		const target = event.target.closest('.carousel__arrow');
-
-		for (let key in this._arrows) {
-
-			if (target === this._arrows[key]) {
-				this._rotateSlider.bind(this)(key);
-				break;
-			}
-
-		}
-	}
-
-	_rotateSlider (arrow) {
-		const width = this._carouselInner.getBoundingClientRect().width;
-		const rotate = {
-			left: () => {
-				this._currentSlideIndex --;
-				this._carouselInner.style.transform = `translateX(${(this._currentSlideIndex) * -width}px)`;
-				return this;
-			},
-			right: () => {
-				this._currentSlideIndex++;
-				this._carouselInner.style.transform = `translateX(${this._currentSlideIndex * -width}px)`;
-				return this;
-			},
-		};
-		rotate[arrow]();
-		this._checkArrows();
-	}
-
-	_checkArrows () {
-		this._arrows.left.style.display = 'flex';
-		this._arrows.right.style.display = 'flex';
-
-		if (this._currentSlideIndex === 0) this._arrows.left.style.display = 'none';
-		if (this._currentSlideIndex === this._slides.length - 1) this._arrows.right.style.display = 'none';
 	}
 }
