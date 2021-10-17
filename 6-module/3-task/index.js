@@ -5,6 +5,11 @@ export default class Carousel {
     this._slides = slides;
 		this._carouselInner = this._createCarouselInnerElement();
 		this._carousel = this._createCarouselElement();
+		this._arrows = {
+			left: this._carousel.querySelector('.carousel__arrow_left'),
+			right: this._carousel.querySelector('.carousel__arrow_right'),
+		};
+		this._currentSlideIndex = 0;
 	}
 
 	get elem () {
@@ -24,36 +29,15 @@ export default class Carousel {
 		`.trim();
 		const carouselElement = createElement(carouselTemplate);
 		carouselElement.append(this._carouselInner);
-		const slidesLength = this._slides.length;
-		const arrows = {
-			left: carouselElement.querySelector('.carousel__arrow_left'),
-			right: carouselElement.querySelector('.carousel__arrow_right'),
-		};
-		let currentSlideIndex = 0;
-		let width = null;
-		checkArrows();
-		carouselElement.addEventListener('click', arrowClickHandler.bind(this));
-
-		function arrowClickHandler (event) {
-			if (event.target.closest('.carousel__arrow')) {
-				const target = event.target.closest('.carousel__arrow');
-				width = (width) ? width : this._carouselInner.getBoundingClientRect().width;
-				
-				if (target === arrows.left) --currentSlideIndex;
-				if (target === arrows.right) ++currentSlideIndex;
-
-				checkArrows();
-				this._carouselInner.style.transform = `translateX(${-currentSlideIndex * width}px)`;
-			}
-		}
-
+		carouselElement.addEventListener('click', this._arrowClickHandler.bind(this));
+/*
 		function checkArrows () {
 			for (let key in arrows) { arrows[key].style.display = 'flex'; }
 
 			if (currentSlideIndex === 0) arrows.left.style.display = 'none';
 			if (currentSlideIndex === slidesLength - 1) arrows.right.style.display = 'none';
 		}
-		
+		*/
 		return carouselElement;
 	}
 
@@ -83,5 +67,18 @@ export default class Carousel {
 		`.trim();
 		const slideElement = createElement(slideTemplate);
 		return slideElement;
+	}
+
+	_arrowClickHandler (event) {
+		if (event.target.closest('.carousel__arrow')) {
+			const width = this._carouselInner.getBoundingClientRect().width
+			const target = event.target.closest('.carousel__arrow');
+			
+			if (target === this._arrows.left) --this._currentSlideIndex;
+			if (target === this._arrows.right) ++this._currentSlideIndex;
+
+			//checkArrows();
+			this._carouselInner.style.transform = `translateX(${-this._currentSlideIndex * width}px)`;
+		}
 	}
 }
