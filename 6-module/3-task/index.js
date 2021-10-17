@@ -38,14 +38,12 @@ export default class Carousel {
 			</div>
 		`.trim();
 		const carouselElement = createElement(carouselTemplate);
-		
 		carouselElement.append(this._carouselInner);
 		carouselElement.querySelector('.carousel__arrow_left').style.display = 'none';
 		carouselElement.addEventListener('click', (event) => {
 			if (event.target.closest('.carousel__arrow')) this._arrowClickHandler.bind(this)(event);
-			if (event.target.closest('.carousel__button')) this._addButtonHandler.bind(this)(event);
+			if (event.target.closest('.carousel__button')) this._addButtonHandler.bind(this)();
 		});
-			//
 		return carouselElement;
 	}
 
@@ -63,12 +61,11 @@ export default class Carousel {
 				</div>
 			</div>
 		`.trim();
-		const slideElement = createElement(slideTemplate);
-		return slideElement;
+		return createElement(slideTemplate);
 	}
 
 	_arrowClickHandler (event) {
-			const width = this._carouselInner.getBoundingClientRect().width
+			const width = this._carouselInner.getBoundingClientRect().width;
 			const target = event.target.closest('.carousel__arrow');
 			
 			for (let key in this._arrows) { this._arrows[key].style.display = 'flex'; }
@@ -82,11 +79,10 @@ export default class Carousel {
 			this._carouselInner.style.transform = `translateX(${-this._currentSlideIndex * width}px)`;
 	}
 
-	_addButtonHandler (event) {
+	_addButtonHandler () {
 		this._carousel.dispatchEvent(new CustomEvent('product-add', {
 			detail: this._slides[this._currentSlideIndex].id,
 			bubbles: true,
 		}));
-		console.log(event);
 	}
 }
