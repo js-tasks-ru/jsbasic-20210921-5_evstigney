@@ -5,7 +5,7 @@ export default class Carousel {
     this._slides = slides;
 		this._carousel = this._createCarouselElement();
 		this._carouselInner = this._createCarouselInnerElement();
-		this._currentSlideIndex = 1;
+		this._currentSlideIndex = 0;
 		this._arrows = {
 			left: this._carousel.querySelector('.carousel__arrow_left'),
 			right: this._carousel.querySelector('.carousel__arrow_right'),
@@ -38,8 +38,9 @@ export default class Carousel {
 	_createCarouselInnerElement () {
 		const carouselInnerTemplate = `<div class="carousel__inner"></div>`;
 		const carouselInnerElement = createElement(carouselInnerTemplate);
-		this._slides.forEach((slide) => {
+		this._slides.forEach((slide, index) => {
 			let slideElement = this._createSlideElement(slide);
+			slideElement.setAttribute('data-index', index);
 			carouselInnerElement.append(slideElement);
 		});
 		return carouselInnerElement;
@@ -84,12 +85,12 @@ export default class Carousel {
 		const rotate = {
 			left: () => {
 				this._currentSlideIndex --;
-				this._carouselInner.style.transform = `translateX(${(this._currentSlideIndex - 1) * -width}px)`;
+				this._carouselInner.style.transform = `translateX(${(this._currentSlideIndex) * -width}px)`;
 				return this;
 			},
 			right: () => {
-				this._carouselInner.style.transform = `translateX(${this._currentSlideIndex * -width}px)`;
 				this._currentSlideIndex++;
+				this._carouselInner.style.transform = `translateX(${this._currentSlideIndex * -width}px)`;
 				return this;
 			},
 		};
@@ -101,7 +102,7 @@ export default class Carousel {
 		this._arrows.left.style.display = 'flex';
 		this._arrows.right.style.display = 'flex';
 
-		if (this._currentSlideIndex === 1) this._arrows.left.style.display = 'none';
-		if (this._currentSlideIndex === this._slides.length) this._arrows.right.style.display = 'none';
+		if (this._currentSlideIndex === 0) this._arrows.left.style.display = 'none';
+		if (this._currentSlideIndex === this._slides.length - 1) this._arrows.right.style.display = 'none';
 	}
 }
