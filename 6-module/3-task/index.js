@@ -38,9 +38,14 @@ export default class Carousel {
 			</div>
 		`.trim();
 		const carouselElement = createElement(carouselTemplate);
+		
 		carouselElement.append(this._carouselInner);
 		carouselElement.querySelector('.carousel__arrow_left').style.display = 'none';
-		carouselElement.addEventListener('click', this._arrowClickHandler.bind(this));
+		carouselElement.addEventListener('click', (event) => {
+			if (event.target.closest('.carousel__arrow')) this._arrowClickHandler.bind(this)(event);
+			if (event.target.closest('.carousel__button')) this._addButtonHandler.bind(this)(event);
+		});
+			//
 		return carouselElement;
 	}
 
@@ -63,7 +68,6 @@ export default class Carousel {
 	}
 
 	_arrowClickHandler (event) {
-		if (event.target.closest('.carousel__arrow')) {
 			const width = this._carouselInner.getBoundingClientRect().width
 			const target = event.target.closest('.carousel__arrow');
 			
@@ -76,6 +80,13 @@ export default class Carousel {
 				(++this._currentSlideIndex === this._slides.length - 1) ? 'none' : 'flex';
 
 			this._carouselInner.style.transform = `translateX(${-this._currentSlideIndex * width}px)`;
-		}
+	}
+
+	_addButtonHandler (event) {
+		this._carousel.dispatchEvent(new CustomEvent('product-add', {
+			detail: this._slides[this._currentSlideIndex].id,
+			bubbles: true,
+		}));
+		console.log(event);
 	}
 }
