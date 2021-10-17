@@ -15,13 +15,14 @@ export default class Carousel {
 			right: this._carousel.querySelector('.carousel__arrow_right'),
 		};
 		let currentSlideIndex = 0;
-		let width = 0;
+		let width = null;
 		checkArrows();
-		this._carousel.addEventListener('click', (event) => {
+		this._carousel.addEventListener('click', arrowClickHandler.bind(this));
 
+		function arrowClickHandler (event) {
 			if (event.target.closest('.carousel__arrow')) {
 				const target = event.target.closest('.carousel__arrow');
-				width = this._carouselInner.getBoundingClientRect().width;
+				width = (width) ? width : this._carouselInner.getBoundingClientRect().width;
 				
 				if (target === arrows.left) --currentSlideIndex;
 				if (target === arrows.right) ++currentSlideIndex;
@@ -29,8 +30,7 @@ export default class Carousel {
 				checkArrows();
 				this._carouselInner.style.transform = `translateX(${-currentSlideIndex * width}px)`;
 			}
-
-		});
+		}
 
 		function checkArrows () {
 			for (let key in arrows) { arrows[key].style.display = 'flex'; }
@@ -61,9 +61,8 @@ export default class Carousel {
 	_createCarouselInnerElement () {
 		const carouselInnerTemplate = `<div class="carousel__inner"></div>`;
 		const carouselInnerElement = createElement(carouselInnerTemplate);
-		this._slides.forEach((slide, index) => {
+		this._slides.forEach((slide) => {
 			let slideElement = this._createSlideElement(slide);
-			slideElement.setAttribute('data-index', index);
 			carouselInnerElement.append(slideElement);
 		});
 		return carouselInnerElement;
