@@ -25,8 +25,11 @@ export default class RibbonMenu {
 				this._arrowClickHandler(event, arrows);
 			}
 
-		});
+			if (event.target.closest('.ribbon__item')) {
+				this._categoryClickHandler(event);
+			}
 
+		});
 		return ribbonMenu;
 	}
 
@@ -91,5 +94,19 @@ export default class RibbonMenu {
 
 			},
 		};
+	}
+
+	_categoryClickHandler (event) {
+		event.preventDefault();
+		const items = this._ribbonMenuElement.querySelectorAll('.ribbon__item');
+		items.forEach((item) => {
+			if (item.matches('.ribbon__item_active')) item.classList.remove('ribbon__item_active');
+		});
+		const target = event.target.closest('.ribbon__item');
+		target.classList.add('ribbon__item_active');
+		this._ribbonMenuElement.dispatchEvent(new CustomEvent('ribbon-select', {
+			detail: target.dataset.id,
+			bubbles: true,
+		}));
 	}
 }
