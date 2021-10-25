@@ -12,6 +12,21 @@ export default class RibbonMenu {
 
 	_render () {
 		const ribbonMenu = this._createRibbonMenuElement();
+		const arrows = {
+			left: ribbonMenu.querySelector('.ribbon__arrow_left'),
+			right: ribbonMenu.querySelector('.ribbon__arrow_right'),
+		};
+		arrows.left.classList.remove('ribbon__arrow_visible');
+		arrows.right.classList.add('ribbon__arrow_visible');
+
+		ribbonMenu.addEventListener('click', (event) => {
+
+			if (event.target.closest('.ribbon__arrow')) {
+				this._arrowClickHandler(event, arrows);
+			}
+
+		});
+
 		return ribbonMenu;
 	}
 
@@ -19,7 +34,7 @@ export default class RibbonMenu {
 		return `<a href="#" class="ribbon__item" data-id="${id}">${name}</a>`
 	}
 
-	_createNavMarkup () {
+	_getNavMarkup () {
 		const itemsMarkup = this._categories
 			.map((category) => this._getCategoryItemMarkup(category))
 			.join('');
@@ -28,16 +43,53 @@ export default class RibbonMenu {
 
 	_createRibbonMenuElement () {
 		const markup = `
-		<div class="ribbon">
-			<button class="ribbon__arrow ribbon__arrow_left ribbon__arrow_visible">
-				<img src="/assets/images/icons/angle-icon.svg" alt="icon">
-			</button>
-			${this._createNavMarkup()}
-			<button class="ribbon__arrow ribbon__arrow_right">
-      	<img src="/assets/images/icons/angle-icon.svg" alt="icon">
-    	</button>
-  	</div>
+			<div class="ribbon">
+				<button class="ribbon__arrow ribbon__arrow_left ribbon__arrow_visible">
+					<img src="/assets/images/icons/angle-icon.svg" alt="icon">
+				</button>
+				${this._getNavMarkup()}
+				<button class="ribbon__arrow ribbon__arrow_right">
+					<img src="/assets/images/icons/angle-icon.svg" alt="icon">
+				</button>
+			</div>
 		`.trim();
 		return createElement(markup);
+	}
+
+	_arrowClickHandler (event, arrows) {
+		const target = event.target.closest('.ribbon__arrow');
+
+		for (let key in arrows) { 
+			if (target === arrows[key]) this._scroll(arrows)[key](target);
+		}
+
+	}
+
+	_scroll (arrows) {
+		const SHIFT = 350;
+		const ribbonInner = this._ribbonMenuElement.querySelector('.ribbon__inner');
+		const maxShift = ribbonInner.scrollWidth - ribbonInner.clientWidth;
+		const minShift = 0;
+		let scrollLeft = ribbonInner.scrollLeft;
+
+		for (let key in arrows) { arrows[key].classList.add('ribbon__arrow_visible'); }
+
+		return {
+			left (arrow) {
+				ribbonInner.scrollBy(-SHIFT, 0);
+				scrollLeft -= SHIFT;
+
+				if (scrollLeft <= minShift) arrow.classList.remove('ribbon__arrow_visible');
+
+			},
+
+			right (arrow) {
+				ribbonInner.scrollBy(SHIFT, 0);
+				scrollLeft += SHIFT;
+
+				if (scrollLeft >= maxShift) arrow.classList.remove('ribbon__arrow_visible');
+
+			},
+		};
 	}
 }
