@@ -29,17 +29,25 @@ export default class Modal {
 	}
 
 	setTitle (title) {
+		let modalTitle = this._element.querySelector('.modal__title');
+
+		if (modalTitle) modalTitle.remove();
+
 		const markup = `<h3 class="modal__title">${title}</h3>`;
-		const titleElement = createElement(markup);
-		this._element.querySelector('.modal__header').append(titleElement);
+		modalTitle = createElement(markup);
+		this._element.querySelector('.modal__header').append(modalTitle);
 		return this._element;
 	}
 
 	setBody (html) {
+		let modalBody = this._element.querySelector('.modal__body');
+		
+		if (modalBody) modalBody.remove();
+
 		const markup = '<div class="modal__body"></div>';
-		const modalBodyElement = createElement(markup);
-		modalBodyElement.replaceChildren(html);
-		this._element.querySelector('.modal__inner').append(modalBodyElement);
+		modalBody = createElement(markup);
+		modalBody.replaceChildren(html);
+		this._element.querySelector('.modal__inner').append(modalBody);
 		return this._element;
 	}
 
