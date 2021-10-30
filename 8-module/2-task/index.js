@@ -5,8 +5,9 @@ import ProductCard from '../../6-module/2-task/index.js';
 export default class ProductGrid {
   constructor (products) {
     this._products = products.slice();
-		this._elem = this._render();
+		this._customProducts = null;
     this._filters = {};
+		this._elem = this._render();
   }
 
 	get elem () {
@@ -14,19 +15,25 @@ export default class ProductGrid {
 	}
 
 	updateFilter (filters) {
-		let productsArr = this._products;
+		Object.assign(this._filters, filters);
+		this._customProducts = this._products.slice();
 
-		for (let key in filters) {
-			productsArr = this._filterArr(productsArr)[key](filters[key]);
+		for (let key in this._filters) {
+			this._customProducts = this._filterArr(this._customProducts)[key](this._filters[key]);
 		}
 
-		this._elem = this._render(productsArr);
-		return this._elem;
+		this.elem.querySelectorAll('.card').forEach((card) => {
+			if (card) {
+				card.remove();
+				card = null;
+			}
+		});
+		this._renderCards(this._customProducts);
+		return this;
 	}
 
 	_render (productsArr) {
 		productsArr = productsArr ?? this._products;
-
 		const markup = `
 			<div class="products-grid">
 			<div class="products-grid__inner">
@@ -35,20 +42,22 @@ export default class ProductGrid {
 			</div>
 		`.trim();
 		this._elem = createElement(markup);
-		productsArr.forEach((product) => {
-			let productElement = new ProductCard(product);
-			this._elem.querySelector('.products-grid__inner').append(productElement.elem);
-		});
-		console.log(productsArr);
+		this._renderCards(productsArr);
 		return this._elem;
+	}
+
+	_renderCards (arr) {
+		arr.forEach((product) => {
+			this._elem.querySelector('.products-grid__inner').append(new ProductCard(product).elem);
+		});
 	}
 
 	_filterArr (array) {
 		const filter =  {
-			noNuts: () => array.filter((item) => !item?.nuts),
-			vegeterianOnly: () => array.filter((item) => item?.vegeterian),
+			noNuts: (value) => array.filter((item) => (!value) ? item : !item?.nuts),
+			vegeterianOnly: (value) => array.filter((item) => (value) ? item?.vegeterian == value : item),
 			maxSpiciness: (value) => array.filter((item) => item.spiciness <= value),
-			category: (value) => array.filter((item) => item.category === value),
+			category: (value) => array.filter((item) => (!value) ? item : item.category === value),
 		};
 		return filter;
 	}
