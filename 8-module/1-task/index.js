@@ -31,6 +31,7 @@ export default class CartIcon {
 
     } else {
       this.elem.classList.remove('cart-icon_visible');
+			this.elem.style.display = '';
     }
   }
 

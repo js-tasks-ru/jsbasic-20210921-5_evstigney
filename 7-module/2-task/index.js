@@ -5,6 +5,10 @@ export default class Modal {
 		this._element = this._createModalElement();
   }
 
+	get elem () {
+		return this._element;
+	}
+
 	_createModalElement () {
 		const markup = `
 			<div class="modal">
