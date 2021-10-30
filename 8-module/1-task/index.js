@@ -39,6 +39,6 @@ export default class CartIcon {
   }
 
   updatePosition() {
-    // ваш код ...
+    
   }
 }
