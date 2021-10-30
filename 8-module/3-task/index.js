@@ -23,7 +23,6 @@ export default class Cart {
 		}
 		
 		this.onProductUpdate(this);
-		//return this;
   }
 
   updateProductCount (productId, amount) {
@@ -34,7 +33,6 @@ export default class Cart {
 		if (this.cartItems[index].count === 0) this.cartItems.splice(index, 1);
 
 		this.onProductUpdate(this);
-		//return this;
   }
 
   isEmpty () {
