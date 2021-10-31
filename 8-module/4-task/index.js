@@ -9,7 +9,7 @@ export default class Cart {
 
   constructor(cartIcon) {
     this.cartIcon = cartIcon;
-
+		this._modal = new Modal();
     this.addEventListeners();
   }
 
@@ -123,32 +123,33 @@ export default class Cart {
 
   renderModal () {
     const TITLE = 'Your order';
-    const modal = new Modal();
-    modal.setTitle(TITLE);
-    modal.setBody(this._createProductCards(this.cartItems));
+    this._modal.setTitle(TITLE);
+    this._modal.setBody(this._createProductCards(this.cartItems));
     const form = this.renderOrderForm();
-    modal.elem.querySelector('.modal__body').append(form);
+    this._modal.elem.querySelector('.modal__body').append(form);
+		const onSubmit = this.onSubmit.bind(this);
 		const counterButtonClickHandler = (event) => {
 			this._counterButtonClickHandler(event);
 			
-			if (!this.cartItems.length) modal.close();
+			if (!this.cartItems.length) this._modal.close();
 
 		};
-    modal.open();
+    this._modal.open();
 
-    modal.elem.addEventListener('click', (event) => {
+    this._modal.elem.addEventListener('click', (event) => {
 
       if (event.target.closest('.cart-counter__button')) counterButtonClickHandler(event);
 
     });
-    return modal;
+
+		form.addEventListener('submit', onSubmit);
+    return this._modal;
   }
 
   onProductUpdate(cartItem) {
 
 		if (document.body.classList.contains('is-modal-open') && cartItem) {
 			const newPrice = cartItem.product.price * cartItem.count;
-			const productId = cartItem.product.id;
 			let productElement = document.querySelector(`[data-product-id="${cartItem.product.id}"]`);
 			const cartPriceElement = productElement.querySelector('.cart-product__price');
 			const totalPriceElement = document.querySelector(`.cart-buttons__info-price`);
@@ -167,8 +168,33 @@ export default class Cart {
     this.cartIcon.update(this);
   }
 
-  onSubmit(event) {
-    // ...ваш код
+  onSubmit (event) {
+    event.preventDefault();
+		
+		const URL = 'https://httpbin.org/post';
+		const SUCCESS_MESSAGE = 'Success!';
+		const formElement = document.querySelector('.cart-form');
+		const submitButton = event.target.querySelector('[type="submit"]');
+		const successMarkup = `
+			<div class="modal__body-inner">
+				<p>
+					Order successful! Your order is being cooked :) <br>
+					We’ll notify you about delivery time shortly.<br>
+					<img src="/assets/images/delivery.gif">
+				</p>
+			</div>
+			`.trim();
+		submitButton.classList.add('is-loading');
+		fetch(URL, { method: 'POST', body: new FormData(formElement) }).then( 
+			responce => {
+				submitButton.classList.remove('is-loading');
+				this.cartItems.length = 0;
+				this.onProductUpdate();
+				this._modal.setTitle(SUCCESS_MESSAGE);
+				this._modal.elem.querySelector('.modal__body').innerHTML = successMarkup;
+			},
+		);
+		
   }
 
   addEventListeners() {
