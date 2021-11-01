@@ -4,9 +4,8 @@ const WINDOW_MOBILE_WIDTH = 767;
 
 export default class CartIcon {
   constructor() {
-    this.render();
-
-    this.addEventListeners();
+		this.elem;
+    this.addEventListeners;
   }
 
   render() {
@@ -23,7 +22,6 @@ export default class CartIcon {
         </div>`;
 
       this.updatePosition();
-
       this.elem.classList.add('shake');
       this.elem.addEventListener('transitionend', () => {
         this.elem.classList.remove('shake');
@@ -36,6 +34,7 @@ export default class CartIcon {
   }
 
   addEventListeners() {
+		console.log(this);
     document.addEventListener('scroll', () => this.updatePosition());
     window.addEventListener('resize', () => this.updatePosition());
   }

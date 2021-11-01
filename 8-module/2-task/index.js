@@ -56,7 +56,7 @@ export default class ProductGrid {
 		const filter =  {
 			noNuts: (value) => array.filter((item) => (!value) ? item : !item.nuts),
 			vegeterianOnly: (value) => array.filter((item) => (value) ? item.vegeterian == value : item),
-			maxSpiciness: (value) => array.filter((item) => item.spiciness <= value),
+			maxSpiciness: (value) => array.filter((item) => (value) ? item.spiciness <= value : item),
 			category: (value) => array.filter((item) => (!value) ? item : item.category === value),
 		};
 		return filter;
