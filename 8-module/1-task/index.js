@@ -4,23 +4,29 @@ const WINDOW_MOBILE_WIDTH = 767;
 
 export default class CartIcon {
   constructor() {
-		this.elem;
+		this._elem = this.render();
+		this.elem = this._elem;
     this.addEventListeners;
   }
 
   render() {
-    return this.elem = createElement('<div class="cart-icon"></div>');
+		const markup = `
+			<div class="cart-icon">
+				<div class="cart-icon__inner">
+					<span class="cart-icon__count"></span>
+					<span class="cart-icon__price"></span>
+				</div>
+			</div>
+		`.trim();
+    return this.elem = createElement(markup);
   }
 
   update(cart) {
     if (!cart.isEmpty()) {
       this.elem.classList.add('cart-icon_visible');
-      this.elem.innerHTML = `
-        <div class="cart-icon__inner">
-          <span class="cart-icon__count">${cart.getTotalCount()}</span>
-          <span class="cart-icon__price">€${cart.getTotalPrice().toFixed(2)}</span>
-        </div>`;
-
+			this.elem.style.display= 'block';
+			this.elem.querySelector('.cart-icon__count').textContent = cart.getTotalCount();
+			this.elem.querySelector('.cart-icon__price').textContent = `€${cart.getTotalPrice().toFixed(2)}`;
       this.updatePosition();
       this.elem.classList.add('shake');
       this.elem.addEventListener('transitionend', () => {
@@ -31,6 +37,7 @@ export default class CartIcon {
       this.elem.classList.remove('cart-icon_visible');
 			this.elem.style.display = '';
     }
+		
   }
 
   addEventListeners() {
@@ -40,7 +47,7 @@ export default class CartIcon {
   }
 
   updatePosition() {
-		if (!this.elem.offsetWidth) return;
+		if (!this.elem.classList.contains('cart-icon_visible')) return;
 
 		if (document.body.clientWidth <= WINDOW_MOBILE_WIDTH) {
 			this._resetStyles();
@@ -54,7 +61,9 @@ export default class CartIcon {
 			right: 10,
 			left: 20,
 		};
-    this.elem.style.display = 'block';
+
+		this.elem.style.display = 'block';
+
 		const leftIndent = Math.min(
 			document.querySelector('.container').getBoundingClientRect().right + ICON_MARGINS.left,
   		document.documentElement.clientWidth - this.elem.offsetWidth - ICON_MARGINS.right
