@@ -107,5 +107,5 @@ import Cart from '../../8-module/4-task/index.js';
 	}
 }
 
-let main = new Main();
-main.render();
+// let main = new Main();
+// main.render();
