@@ -55,6 +55,8 @@ export default class CartIcon {
 		}
 		
 		if (!document.body.scrollTop) this._resetStyles();
+
+		if (!document.querySelector('.container')) return;
 		
 		const ICON_MARGINS = {
 			top: 50,

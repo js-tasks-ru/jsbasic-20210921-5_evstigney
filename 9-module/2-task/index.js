@@ -48,8 +48,7 @@ import Cart from '../../8-module/4-task/index.js';
 					.addEventListener('change', (event) => {
 						this.productsGrid.updateFilter( { vegeterianOnly: event.target.checked } );
 					})
-			)
-			.catch((err) => console.log(err));
+			);
   }
 
 	_createCarousel () {
