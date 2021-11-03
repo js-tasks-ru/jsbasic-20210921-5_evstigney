@@ -4,6 +4,7 @@ export default class RibbonMenu {
   constructor(categories) {
     this._categories = categories;
 		this._ribbonMenuElement = this._render();
+		this.value = '';
   }
 
 	get elem () {
@@ -104,6 +105,7 @@ export default class RibbonMenu {
 		});
 		const target = event.target.closest('.ribbon__item');
 		target.classList.add('ribbon__item_active');
+		this.value = target.dataset.id;
 		this._ribbonMenuElement.dispatchEvent(new CustomEvent('ribbon-select', {
 			detail: target.dataset.id,
 			bubbles: true,

@@ -33,7 +33,7 @@ export default class ProductGrid {
 	}
 
 	_render (productsArr) {
-		productsArr = productsArr ?? this._products;
+		productsArr = productsArr || this._products;
 		const markup = `
 			<div class="products-grid">
 			<div class="products-grid__inner">
@@ -54,9 +54,9 @@ export default class ProductGrid {
 
 	_filterArr (array) {
 		const filter =  {
-			noNuts: (value) => array.filter((item) => (!value) ? item : !item?.nuts),
-			vegeterianOnly: (value) => array.filter((item) => (value) ? item?.vegeterian == value : item),
-			maxSpiciness: (value) => array.filter((item) => item.spiciness <= value),
+			noNuts: (value) => array.filter((item) => (!value) ? item : !item.nuts),
+			vegeterianOnly: (value) => array.filter((item) => (value) ? item.vegeterian == value : item),
+			maxSpiciness: (value) => array.filter((item) => (value) ? item.spiciness <= value : item),
 			category: (value) => array.filter((item) => (!value) ? item : item.category === value),
 		};
 		return filter;

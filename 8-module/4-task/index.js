@@ -5,9 +5,8 @@ import escapeHtml from '../../assets/lib/escape-html.js';
 import Modal from '../../7-module/2-task/index.js';
 
 export default class Cart {
-  cartItems = []; // [product: {...}, count: N]
-
   constructor(cartIcon) {
+		this.cartItems = [];
     this.cartIcon = cartIcon;
 		this._modal = new Modal();
     this.addEventListeners();
@@ -18,7 +17,7 @@ export default class Cart {
   }
 
   addProduct (product) {
-    product = product ?? null;
+    product = product || null;
 
     if (!product) return;
 
@@ -36,7 +35,7 @@ export default class Cart {
   }
 
   updateProductCount (productId, amount) {
-    amount = amount ?? 0;
+    amount = amount || 0;
     const index = this.cartItems.findIndex((item) => item.product.id === productId);
     this.cartItems[index].count += +amount;
 
@@ -211,9 +210,9 @@ export default class Cart {
   _counterButtonClickHandler (event) {
     const target = event.target.closest('.cart-counter__button');
     const productId = event.target.closest('[data-product-id]').dataset.productId;
-		const productItem = this.cartItems.find(item => item.product.id === productId) ?? null;
+		const productItem = this.cartItems.find(item => item.product.id === productId) || null;
 			
-    if (!productItem?.count && target.closest('.cart-counter__button_minus')) return;
+    if (!productItem.count && target.closest('.cart-counter__button_minus')) return;
     
     const changeAmount = (target.closest('.cart-counter__button_plus')) ? 1 : -1;
 

@@ -11,10 +11,14 @@ export default class StepSlider {
 
 	_render () {
 		let slider = this._createSliderElement();
+		let sliderThumb = slider.querySelector('.slider__thumb');
+		sliderThumb.style.left = `${this._value / this._steps * 100}%`
+		const thumbMoveHandler = this._thumbMoveHandler.bind(this);
+		const sliderClickHandler = this._sliderClickHandler.bind(this);
 
-		slider.addEventListener('click', this._sliderClickHandler.bind(this));
+		slider.addEventListener('click', sliderClickHandler);
 		slider.querySelector('.slider__thumb')
-			.addEventListener('pointerdown', this._thumbMoveHandler.bind(this));
+			.addEventListener('pointerdown', thumbMoveHandler);
 		return slider;
 	}
 
@@ -22,9 +26,9 @@ export default class StepSlider {
 		const markup = `
 			<div class="slider">
 				<div class="slider__thumb" style="left: 50%;">
-					<span class="slider__value">2</span>
+					<span class="slider__value">${this._value}</span>
 				</div>
-				<div class="slider__progress" style="width: 50%;"></div>
+				<div class="slider__progress" style="width: ${this._value / this._steps * 100}%;"></div>
 				<div class="slider__steps">
 					${new Array(this._steps).fill('<span></span>').join('')}
 				</div>
@@ -44,7 +48,13 @@ export default class StepSlider {
 			min: 0,
 			max: this._slider.clientWidth,
 		};
-		let clickPosition = event.clientX - this._slider.offsetLeft - this._slider.clientLeft;
+		let clickPosition = event.clientX - Math.round(this._slider.getBoundingClientRect().left)
+			 - this._slider.clientLeft;
+
+		if (event.target.closest('slider_dragging')) {
+			clickPosition -= this_slider.offsetLeft;
+		}
+
 		clickPosition = (clickPosition < area.min) ? area.min
 			: (clickPosition > area.max) ? area.max
 			: clickPosition;
@@ -75,7 +85,6 @@ export default class StepSlider {
 
 		if (!event.target.closest('.slider__thumb')) return;
 
-		event.preventDefault();
 		const slider = event.target.closest('.slider');
 		const thumb = event.target.closest('.slider__thumb');
 		this.elem.classList.add('slider_dragging');
@@ -95,7 +104,8 @@ export default class StepSlider {
 				min: 0,
 				max: 100,
 			};
-			let position = event.clientX - slider.offsetLeft - slider.clientLeft;
+			let position = event.clientX - Math.round(this._slider.getBoundingClientRect().left)
+			 - this._slider.clientLeft;
 			position = Math.round(position * 100 / slider.clientWidth);
 			position = (position < area.min) ? area.min
 				: (position > area.max) ? area.max
@@ -103,6 +113,7 @@ export default class StepSlider {
 			this.elem.querySelector('.slider__thumb').style.left = `${position}%`;
 			this.elem.querySelector('.slider__progress').style.width = `${position}%`;
 			getValue(event);
+			
 		}
 
 		function endMove () {
